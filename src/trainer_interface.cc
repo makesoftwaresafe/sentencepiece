@@ -130,8 +130,15 @@ absl::Status VerifySpec(const TrainerSpec& trainer_spec,
   }
 
   if (absl::GetFlag(FLAGS_auto_character_coverage)) {
-    RET_CHECK(trainer_spec.model_type() == TrainerSpec::UNIGRAM)
-        << "--auto_character_coverage is only supported in UNIGRAM model mode.";
+    RET_CHECK(trainer_spec.model_type() == TrainerSpec::UNIGRAM ||
+              trainer_spec.model_type() == TrainerSpec::BPE)
+        << "--auto_character_coverage is only supported in UNIGRAM or BPE "
+           "model mode.";
+    if (trainer_spec.model_type() == TrainerSpec::UNIGRAM) {
+      RET_CHECK(absl::GetFlag(FLAGS_use_sparse_pruning))
+          << "--auto_character_coverage in UNIGRAM mode requires "
+             "--use_sparse_pruning=true.";
+    }
     RET_CHECK(trainer_spec.byte_fallback())
         << "--auto_character_coverage requires --byte_fallback=true.";
     RET_CHECK(trainer_spec.required_chars().empty())
