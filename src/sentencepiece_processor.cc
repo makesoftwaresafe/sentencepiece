@@ -118,16 +118,16 @@ absl::Status SentencePieceProcessor::Load(
   // Precomputes and caches special token IDs.
   // Note that these IDs are not always the same as the IDs in TrainerSpec.
   unk_id_ = PieceToId(model_->unk_piece());
-  if (!IsUnknown(unk_id_)) unk_id_ = -1;
+  if (unk_id_ >= 0 && !IsUnknown(unk_id_)) unk_id_ = -1;
 
   bos_id_ = PieceToId(model_->bos_piece());
-  if (!IsControl(bos_id_)) bos_id_ = -1;
+  if (bos_id_ >= 0 && !IsControl(bos_id_)) bos_id_ = -1;
 
   eos_id_ = PieceToId(model_->eos_piece());
-  if (!IsControl(eos_id_)) eos_id_ = -1;
+  if (eos_id_ >= 0 && !IsControl(eos_id_)) eos_id_ = -1;
 
   pad_id_ = PieceToId(model_->pad_piece());
-  if (!IsControl(pad_id_)) pad_id_ = -1;
+  if (pad_id_ >= 0 && !IsControl(pad_id_)) pad_id_ = -1;
 
   return absl::OkStatus();
 }
@@ -469,7 +469,7 @@ absl::Status SentencePieceProcessor::Decode(
     if (IsControl(id)) {                 // <s>, </s>
       return std::make_pair("", false);  // invisible symbol.
     } else if (IsUnknown(id)) {
-      if (IdToPiece(id) == piece) {  // <unk>
+      if (id >= 0 && IdToPiece(id) == piece) {  // <unk>
         return std::make_pair(std::string(unk_surface), false);
       } else {  // return piece when piece is not <unk>.
         return std::make_pair(std::string(piece), false);
@@ -1058,12 +1058,12 @@ float SentencePieceProcessor::GetScore(int id) const {
 
 bool SentencePieceProcessor::IsControl(int id) const {
   RET_CHECK_OR_RETURN_DEFAULT(0);
-  return model_->IsControl(id);
+  return id >= 0 && model_->IsControl(id);
 }
 
 bool SentencePieceProcessor::IsUnknown(int id) const {
   RET_CHECK_OR_RETURN_DEFAULT(0);
-  return model_->IsUnknown(id);
+  return id == unk_id_ || (id >= 0 && model_->IsUnknown(id));
 }
 
 bool SentencePieceProcessor::IsUnused(int id) const {
@@ -1394,7 +1394,7 @@ absl::Status SentencePieceProcessor::DecodeOptimized(
       }
 
       if (IsUnknown(id)) {
-        if (IdToPiece(id) == piece) {
+        if (id >= 0 && IdToPiece(id) == piece) {
           absl::StrAppend(detokenized, unk_surface);
         } else {
           absl::StrAppend(detokenized, piece);

@@ -129,7 +129,8 @@ ABSL_FLAG(bool, use_all_vocab, kDefaultTrainerSpec.use_all_vocab(),
           "If set to true, use all tokens as vocab. "
           "Valid for word/char models.");
 ABSL_FLAG(int32_t, unk_id, kDefaultTrainerSpec.unk_id(),
-          "Override UNK (<unk>) id.");
+          "Override UNK (<unk>) id. Set -1 to disable UNK (requires "
+          "--byte_fallback=true).");
 ABSL_FLAG(int32_t, bos_id, kDefaultTrainerSpec.bos_id(),
           "Override BOS (<s>) id. Set -1 to disable BOS.");
 ABSL_FLAG(int32_t, eos_id, kDefaultTrainerSpec.eos_id(),

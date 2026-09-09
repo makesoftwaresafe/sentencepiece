@@ -771,7 +771,15 @@ absl::Status TrainerInterface::InitMetaPieces() {
   RET_CHECK(insert_id(trainer_spec_.eos_id(), trainer_spec_.eos_piece()));
   RET_CHECK(insert_id(trainer_spec_.pad_id(), trainer_spec_.pad_piece()));
 
-  RET_CHECK(has_unk) << trainer_spec_.unk_piece() << " must be defined.";
+  if (!trainer_spec_.byte_fallback()) {
+    RET_CHECK(has_unk) << trainer_spec_.unk_piece() << " must be defined.";
+  }
+
+  if (trainer_spec_.unk_id() == -1) {
+    LOG(WARNING) << "Setting unk_id = -1 generates a model that cannot be "
+                    "loaded with SentencePiece <= 0.2.2. Please ensure "
+                    "SentencePiece >= 0.2.3 is used for inference.";
+  }
 
   absl::flat_hash_set<std::string> dup;
 
