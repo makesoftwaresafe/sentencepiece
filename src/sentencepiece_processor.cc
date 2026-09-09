@@ -70,6 +70,8 @@ constexpr absl::string_view kReplacementCharacter = "\xef\xbf\xbd";
 // maximum nbest or sampling size.
 constexpr int kMaxNBestSize = 512;
 
+constexpr absl::string_view kNullPiece("\0", 1);
+
 }  // namespace
 
 SentencePieceProcessor::SentencePieceProcessor() {}
@@ -101,6 +103,23 @@ absl::Status SentencePieceProcessor::LoadFromSerializedProto(
 absl::Status SentencePieceProcessor::Load(
     std::unique_ptr<ModelProto> model_proto) {
   model_proto_ = std::move(model_proto);
+  // Workaround for https://github.com/google/sentencepiece/issues/1308
+  // Third-party conversion scripts may erroneously insert a raw null-byte
+  // piece ("\0") even when byte_fallback is enabled (where "<0x00>" is
+  // already defined). Mark it as UNUSED so it is excluded from trie building
+  // and encoding.
+  if (model_proto_->trainer_spec().byte_fallback()) {
+    for (int i = 0; i < model_proto_->pieces_size(); ++i) {
+      auto* sp = model_proto_->mutable_pieces(i);
+      if (sp->piece() == kNullPiece) {
+        LOG(WARNING)
+            << "Piece at index " << i
+            << " is a null character (\\0) and byte_fallback is enabled. "
+            << "Treating it as an UNUSED piece.";
+        sp->set_type(ModelProto::SentencePiece::UNUSED);
+      }
+    }
+  }
   model_ = ModelFactory::Create(*model_proto_);
   normalizer_ = std::make_unique<normalizer::Normalizer>(
       model_proto_->normalizer_spec(), model_proto_->trainer_spec());
