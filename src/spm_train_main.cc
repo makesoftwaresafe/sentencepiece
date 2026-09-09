@@ -46,8 +46,6 @@ ABSL_FLAG(std::string, model_type, "unigram",
           "model algorithm: unigram, bpe, word or char");
 ABSL_FLAG(int32_t, vocab_size, kDefaultTrainerSpec.vocab_size(),
           "vocabulary size");
-ABSL_FLAG(std::string, accept_language, "",
-          "comma-separated list of languages this model can accept");
 ABSL_FLAG(double, character_coverage, kDefaultTrainerSpec.character_coverage(),
           "character coverage to determine the minimum symbols");
 ABSL_FLAG(std::uint64_t, input_sentence_size,
@@ -148,11 +146,26 @@ ABSL_FLAG(std::string, pad_piece, kDefaultTrainerSpec.pad_piece(),
 ABSL_FLAG(std::string, unk_surface, kDefaultTrainerSpec.unk_surface(),
           "Dummy surface string for <unk>. In decoding <unk> is decoded to "
           "`unk_surface`.");
-ABSL_FLAG(bool, train_extremely_large_corpus,
-          kDefaultTrainerSpec.train_extremely_large_corpus(),
-          "Increase bit depth for unigram tokenization.");
 ABSL_FLAG(uint32_t, random_seed, std::numeric_limits<uint32_t>::max(),
           "Seed value for random generator.");
+
+// Deprecated flags.
+ABSL_RETIRED_FLAG(std::string, accept_language, "",
+                  "comma-separated list of languages this model can accept");
+ABSL_RETIRED_FLAG(int32_t, self_test_sample_size, 0,
+                  "the size of self test samples");
+ABSL_RETIRED_FLAG(int32_t, mining_sentence_size, 0,
+                  "the size of sentences the trainer mines");
+ABSL_RETIRED_FLAG(int32_t, training_sentence_size, 0,
+                  "the size of sentences the trainer trains");
+ABSL_RETIRED_FLAG(bool, train_extremely_large_corpus, false,
+                  "Increase bit depth for unigram tokenization.");
+ABSL_RETIRED_FLAG(bool, enable_differential_privacy, false,
+                  "Whether to add DP while training.");
+ABSL_RETIRED_FLAG(float, differential_privacy_noise_level, 0.0f,
+                  "Amount of noise to add for DP");
+ABSL_RETIRED_FLAG(std::uint64_t, differential_privacy_clipping_threshold, 0,
+                  "Threshold for clipping the counts for DP");
 
 int main(int argc, char* argv[]) {
   sentencepiece::ParseCommandLineFlags(argv[0], &argc, &argv, true);
@@ -243,10 +256,8 @@ int main(int argc, char* argv[]) {
   SetTrainerSpecFromFlag(required_chars);
   SetTrainerSpecFromFile(required_chars);
   SetTrainerSpecFromFlag(vocabulary_output_piece_score);
-  SetRepeatedTrainerSpecFromFlag(accept_language);
   SetRepeatedTrainerSpecFromFlag(control_symbols);
   SetRepeatedTrainerSpecFromFlag(user_defined_symbols);
-  SetTrainerSpecFromFlag(train_extremely_large_corpus);
   SetRepeatedTrainerSpecFromFile(control_symbols);
   SetRepeatedTrainerSpecFromFile(user_defined_symbols);
 
