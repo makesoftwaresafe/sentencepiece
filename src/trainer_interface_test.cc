@@ -320,6 +320,17 @@ TEST(TrainerInterfaceTest, OverrideSpecialPiecesTest) {
   }
 
   {
+    // UNK is not defined, but byte_fallback is true.
+    auto trainer_spec = base_trainer_spec;
+    trainer_spec.set_unk_id(-1);
+    trainer_spec.set_bos_id(0);
+    trainer_spec.set_eos_id(1);
+    trainer_spec.set_byte_fallback(true);
+    TrainerInterface trainer(trainer_spec, normalizer_spec, denormalizer_spec);
+    EXPECT_TRUE(trainer.status().ok());
+  }
+
+  {
     // UNK is out-of-range.
     auto trainer_spec = base_trainer_spec;
     trainer_spec.set_unk_id(640000);

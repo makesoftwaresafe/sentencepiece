@@ -175,6 +175,10 @@ absl::Status RewriteIds(const sentencepiece::SentencePieceProcessor& sp,
     pieces->push_back(sp.IdToPiece(sp.eos_id()));
   }
   if (emit_unk_piece) {
+    if (sp.unk_id() == -1) {
+      return absl::InvalidArgumentError(
+          "UNK token is not defined in this model.");
+    }
     const auto& unk = sp.IdToPiece(sp.unk_id());
     for (auto& piece : *pieces) {
       const int id = sp.PieceToId(piece);
@@ -1263,8 +1267,8 @@ PYBIND11_MODULE(_sentencepiece, m, py::mod_gil_not_used()) {
              // A batch may start with empty sequences (e.g. a sentence that
              // encoded to no pieces / no ids). Empty sequences carry no type
              // information, so infer the element type from the first non-empty
-             // inner sequence; otherwise a piece batch that starts with an empty
-             // sequence would be decoded as an id batch.
+             // inner sequence; otherwise a piece batch that starts with an
+             // empty sequence would be decoded as an id batch.
              for (size_t i = 0; i < py_ins.size(); ++i) {
                py::object seq = py_ins[i];
                if (!py::isinstance<py::list>(seq) &&
