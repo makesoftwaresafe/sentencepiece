@@ -142,6 +142,7 @@ For detailed guides, API references, and advanced usage, please refer to the fol
 *   [Performance Benchmark Details](doc/performance_benchmark.md)
 *   [Performance Benchmark Code & Reproduction Guide](benchmark/README.md)
 *   [Training Options Reference](doc/options.md)
+*   [Auto-Character Coverage & Byte-Fallback Guide](doc/auto_character_coverage.md)
 *   [Text Normalization & Custom Rules](doc/normalization.md)
 *   [Special Symbols & Control Tokens](doc/special_symbols.md)
 *   [Vocabulary Piece Constraints](doc/piece_constraints.md)
