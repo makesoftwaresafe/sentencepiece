@@ -36,10 +36,10 @@
 #include "absl/strings/str_split.h"
 #include "absl/strings/string_view.h"
 #include "absl/strings/strip.h"
+#include "darts.h"
 #include "filesystem.h"
 #include "normalizer.h"
 #include "ret_check.h"
-#include "darts.h"
 #include "util.h"
 
 #ifdef ENABLE_NFKC_COMPILE
@@ -448,23 +448,22 @@ absl::Status BuildMapInternal(
 absl::Status Builder::BuildNFKCMap(CharsMap* chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
   LOG(INFO) << "Running BuildNFKCMap";
-  BuildMapInternal(chars_map, ToNFKC, ToNFKD);
+  return BuildMapInternal(chars_map, ToNFKC, ToNFKD);
 #else
   LOG(ERROR) << kCompileError;
-#endif
-
   return absl::OkStatus();
+#endif
 }
 
 // static
 absl::Status Builder::BuildNFCMap(CharsMap* chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
   LOG(INFO) << "Running BuildNFCMap";
-  BuildMapInternal(chars_map, ToNFC, ToNFD);
+  return BuildMapInternal(chars_map, ToNFC, ToNFD);
 #else
   LOG(ERROR) << kCompileError;
-#endif
   return absl::OkStatus();
+#endif
 }
 
 absl::Status Builder::BuildNmtNFKCMap(CharsMap* chars_map) {
