@@ -63,6 +63,76 @@ TEST(BuilderTest, BuildNFKCMapTest) {
 #endif
 }
 
+TEST(BuilderTest, BuildNFCMapTest) {
+  Builder::CharsMap chars_map;
+#ifdef ENABLE_NFKC_COMPILE
+  EXPECT_TRUE(Builder::BuildNFCMap(&chars_map).ok());
+  EXPECT_TRUE(!chars_map.empty());
+#else
+  EXPECT_TRUE(Builder::BuildNFCMap(&chars_map).ok());
+#endif
+}
+
+TEST(BuilderTest, BuildNFDMapTest) {
+  Builder::CharsMap chars_map;
+#ifdef ENABLE_NFKC_COMPILE
+  EXPECT_TRUE(Builder::BuildNFDMap(&chars_map).ok());
+  EXPECT_TRUE(!chars_map.empty());
+#else
+  EXPECT_TRUE(Builder::BuildNFDMap(&chars_map).ok());
+#endif
+}
+
+TEST(BuilderTest, BuildNFKDMapTest) {
+  Builder::CharsMap chars_map;
+#ifdef ENABLE_NFKC_COMPILE
+  EXPECT_TRUE(Builder::BuildNFKDMap(&chars_map).ok());
+  EXPECT_TRUE(!chars_map.empty());
+#else
+  EXPECT_TRUE(Builder::BuildNFKDMap(&chars_map).ok());
+#endif
+}
+
+TEST(BuilderTest, BuildNFC_CFMapTest) {
+  Builder::CharsMap chars_map;
+#ifdef ENABLE_NFKC_COMPILE
+  EXPECT_TRUE(Builder::BuildNFC_CFMap(&chars_map).ok());
+  EXPECT_TRUE(!chars_map.empty());
+#else
+  EXPECT_TRUE(Builder::BuildNFC_CFMap(&chars_map).ok());
+#endif
+}
+
+TEST(BuilderTest, BuildNFD_CFMapTest) {
+  Builder::CharsMap chars_map;
+#ifdef ENABLE_NFKC_COMPILE
+  EXPECT_TRUE(Builder::BuildNFD_CFMap(&chars_map).ok());
+  EXPECT_TRUE(!chars_map.empty());
+#else
+  EXPECT_TRUE(Builder::BuildNFD_CFMap(&chars_map).ok());
+#endif
+}
+
+TEST(BuilderTest, BuildNFKD_CFMapTest) {
+  Builder::CharsMap chars_map;
+#ifdef ENABLE_NFKC_COMPILE
+  EXPECT_TRUE(Builder::BuildNFKD_CFMap(&chars_map).ok());
+  EXPECT_TRUE(!chars_map.empty());
+#else
+  EXPECT_TRUE(Builder::BuildNFKD_CFMap(&chars_map).ok());
+#endif
+}
+
+TEST(BuilderTest, BuildNFKC_CFMapTest) {
+  Builder::CharsMap chars_map;
+#ifdef ENABLE_NFKC_COMPILE
+  EXPECT_TRUE(Builder::BuildNFKC_CFMap(&chars_map).ok());
+  EXPECT_TRUE(!chars_map.empty());
+#else
+  EXPECT_TRUE(Builder::BuildNFKC_CFMap(&chars_map).ok());
+#endif
+}
+
 TEST(BuilderTest, GetPrecompiledCharsMapTest) {
   SetDataDir(::testing::SrcDir());
 

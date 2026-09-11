@@ -656,7 +656,7 @@ absl::Status Builder::BuildNFKD_CFMap(CharsMap* chars_map) {
 absl::Status Builder::BuildNFC_CFMap(CharsMap* chars_map) {
 #ifdef ENABLE_NFKC_COMPILE
   CharsMap nfc_map;
-  ABSL_RETURN_IF_ERROR(Builder::BuildNFKDMap(&nfc_map));
+  ABSL_RETURN_IF_ERROR(Builder::BuildNFCMap(&nfc_map));
   ABSL_RETURN_IF_ERROR(Builder::MergeUnicodeCaseFoldMap(&nfc_map));
   *chars_map = std::move(nfc_map);
 #else
