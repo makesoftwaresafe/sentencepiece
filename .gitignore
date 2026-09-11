@@ -55,3 +55,7 @@ test_tmp
 
 # Bazel outputs
 bazel-*
+
+# Documentation build outputs
+/_docs_build/
+/site/

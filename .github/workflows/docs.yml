@@ -1,0 +1,106 @@
+name: Deploy Documentation to GitHub Pages
+
+on:
+  push:
+    branches: ["master", "main"]
+    paths:
+      - "README.md"
+      - "doc/**"
+      - "python/**/*.md"
+      - "benchmark/**/*.md"
+      - "mkdocs.yml"
+      - ".github/workflows/docs.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install MkDocs Material & Awesome Pages Plugin
+        run: pip install mkdocs-material mkdocs-awesome-pages-plugin
+
+      - name: Prepare _docs_build directory (preserving all relative links, order & MathJax config)
+        run: |
+          mkdir -p _docs_build/doc _docs_build/python _docs_build/benchmark _docs_build/javascripts
+          cp README.md _docs_build/index.md
+          cp doc/*.md _docs_build/doc/
+          cp python/*.md _docs_build/python/
+          cp benchmark/*.md _docs_build/benchmark/ 2>/dev/null || true
+          cat << 'EOF' > _docs_build/.pages
+          nav:
+            - Overview: index.md
+            - Python Module: python
+            - Guides & References: doc
+            - Benchmark Suite: benchmark
+            - ...
+          EOF
+          cat << 'EOF' > _docs_build/doc/.pages
+          nav:
+            - cli.md
+            - cpp.md
+            - options.md
+            - auto_character_coverage.md
+            - piece_constraints.md
+            - normalization.md
+            - special_symbols.md
+            - model_proto.md
+            - bazel.md
+            - performance_benchmark.md
+            - ...
+          EOF
+          cat << 'EOF' > _docs_build/javascripts/mathjax.js
+          window.MathJax = {
+            tex: {
+              inlineMath: [["\\(", "\\)"]],
+              displayMath: [["\\[", "\\]"]],
+              processEscapes: true,
+              processEnvironments: true
+            },
+            options: {
+              ignoreHtmlClass: ".*|",
+              processHtmlClass: "arithmatex"
+            }
+          };
+          document$.subscribe(() => {
+            MathJax.startup.output.clearCache();
+            MathJax.typesetClear();
+            MathJax.texReset();
+            MathJax.typesetPromise();
+          });
+          EOF
+
+      - name: Build MkDocs site
+        run: mkdocs build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
