@@ -1,6 +1,6 @@
 # Auto-character Coverage (`--auto_character_coverage`): Global Optimization of Character and Subword Budget
 
-SentencePiece 0.2.3 introduces **Auto-character Coverage mode (`--auto_character_coverage=true`)** for both BPE and Unigram models (default is `false`). This mode automatically determines the allocation between single characters and multi-character subwords within a given vocabulary budget via mathematical optimization.
+SentencePiece 0.2.3 introduces **Auto-character Coverage mode (`--auto_character_coverage=true`)** for both BPE and Unigram models (default is `false`). This mode automatically determines the allocation between single characters and multi-character subwords within a given vocabulary budget via mathematical optimization. Just like Byte-Level BPE, **lossless round-trip is guaranteed**: Auto-character coverage retains a byte fallback tier (`--byte_fallback=true`) for anything outside the learned character set, decomposing unseen codepoints into UTF-8 byte tokens (`<0x00>`–`<0xFF>`) rather than producing `<unk>`.
 
 ---
 
@@ -12,8 +12,8 @@ Subword tokenization methods generally fall into two categories: **Unicode chara
 
 - **Byte-Level BPE (BBPE)**:
   Uses the 256 raw bytes (`0x00`–`0xFF`) as initial atomic units. Because the base vocabulary is fixed to 256 bytes, no initial character selection is needed, and out-of-vocabulary (OOV) tokens do not occur, making it widely used in Large Language Models (LLMs). On the other hand, because byte sequences are merged without respecting UTF-8 character boundaries, text is frequently split into malformed UTF-8 byte fragments that cannot be independently decoded into valid characters ([Wang et al., 2020](https://arxiv.org/abs/1909.03341); [Jang et al., 2024](https://arxiv.org/abs/2410.23684); [Land & Arnett, 2025](https://arxiv.org/abs/2505.24689)).
-- **Unicode Character-Based Methods (SentencePiece)**:
-  Treats Unicode codepoints appearing in the training corpus as candidate atomic units. Because a large multilingual corpus contains tens of thousands of unique Unicode characters, registering all of them within a limited vocabulary budget (e.g., 8,000 to 128,000 pieces) is impossible; instead, high-frequency characters are selected using a heuristic criterion to serve as atomic units (unregistered characters are handled by decomposing them into UTF-8 byte tokens `<0x00>`–`<0xFF>` via `--byte_fallback=true`).
+- **Unicode Character-Based Methods (SentencePiece + byte-fallback)**:
+  Treats Unicode codepoints appearing in the training corpus as candidate atomic units. Because a large multilingual corpus contains tens of thousands of unique Unicode characters, registering all of them within a limited vocabulary budget (e.g., 8,000 to 128,000 pieces) is impossible; instead, high-frequency characters are selected using a heuristic criterion to serve as atomic units (unregistered characters are handled by decomposing them into UTF-8 byte tokens `<0x00>`–`<0xFF>` via `--byte_fallback=true`, guaranteeing lossless round-trip without `<unk>`).
 
 ### 1.2 Limitations of Fixed `character_coverage` (0.9995 Heuristic)
 
