@@ -105,6 +105,10 @@ ABSL_FLAG(std::string, required_chars_file, "",
           "load required_chars from file.");
 ABSL_FLAG(bool, byte_fallback, kDefaultTrainerSpec.byte_fallback(),
           "decompose unknown pieces into UTF-8 byte pieces");
+ABSL_FLAG(
+    bool, auto_character_coverage,
+    kDefaultTrainerSpec.auto_character_coverage(),
+    "automatically determines the allocation between characters and subwords");
 ABSL_FLAG(bool, vocabulary_output_piece_score,
           kDefaultTrainerSpec.vocabulary_output_piece_score(),
           "Define score in vocab file");
@@ -240,6 +244,7 @@ int main(int argc, char* argv[]) {
   SetTrainerSpecFromFlag(split_digits);
   SetTrainerSpecFromFlag(pretokenization_delimiter);
   SetTrainerSpecFromFlag(byte_fallback);
+  SetTrainerSpecFromFlag(auto_character_coverage);
   SetTrainerSpecFromFlag(treat_whitespace_as_suffix);
   SetTrainerSpecFromFlag(allow_whitespace_only_pieces);
   SetTrainerSpecFromFlag(hard_vocab_limit);

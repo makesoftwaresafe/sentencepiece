@@ -139,9 +139,6 @@ TEST(BPETrainerTest, EndToEndTest) {
 }
 
 TEST(BPETrainerTest, AutoCharacterCoverageTest) {
-  absl::FlagSaver flag_saver;
-  absl::SetFlag(&FLAGS_auto_character_coverage, true);
-
   const std::string input_file =
       filesystem::JoinPath(::testing::TempDir(), "input_auto_bpe");
   const std::string model_prefix =
@@ -158,6 +155,7 @@ TEST(BPETrainerTest, AutoCharacterCoverageTest) {
   }
 
   TrainerSpec trainer_spec;
+  trainer_spec.set_auto_character_coverage(true);
   trainer_spec.set_model_type(TrainerSpec::BPE);
   trainer_spec.add_input(input_file);
   trainer_spec.set_byte_fallback(true);
@@ -219,9 +217,6 @@ TEST(BPETrainerTest, AutoCharacterCoverageTest) {
 }
 
 TEST(BPETrainerTest, EndToEndTestWithAutoCharacterCoverage) {
-  absl::FlagSaver flag_saver;
-  absl::SetFlag(&FLAGS_auto_character_coverage, true);
-
   const std::string input =
       filesystem::JoinPath(::testing::SrcDir(), kTestInputData);
   const std::string model_prefix =
@@ -232,6 +227,7 @@ TEST(BPETrainerTest, EndToEndTestWithAutoCharacterCoverage) {
           absl::StrCat("--model_prefix=", model_prefix, " --input=", input,
                        " --vocab_size=8000 --normalization_rule_name=identity"
                        " --model_type=bpe --byte_fallback=true "
+                       "--auto_character_coverage=true "
                        "--max_sentence_length=2048"))
           .ok());
 

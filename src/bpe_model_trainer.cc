@@ -271,7 +271,7 @@ absl::Status Trainer::Train() {
     SplitSentencesByWhitespace();
   }
 
-  const bool auto_vocab = absl::GetFlag(FLAGS_auto_character_coverage);
+  const bool auto_vocab = trainer_spec_.auto_character_coverage();
 
   // Initializes symbols_. symbols_[sid][i] stores an unary symbol.
   symbols_.resize(sentences_.size());

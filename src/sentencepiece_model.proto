@@ -206,6 +206,9 @@ message TrainerSpec {
   // seed sentencepiece <tab> frequency per line.
   optional string seed_sentencepieces_file = 54 [default = ""];
 
+  // Automatically determines the allocation between characters and subwords.
+  optional bool auto_character_coverage = 55 [default = false];
+
   ///////////////////////////////////////////////////////////////////
   // Deprecated parameters.
   // These parameters are deprecated and will be removed in the future.
